@@ -1,0 +1,422 @@
+package Spel;
+
+import java.util.Scanner;
+
+
+public class Dungeon {
+boolean isInGame = true; //Variable used to keep game running
+Player player1 = new Player("Hero",10,1); //Creates player object
+Monster pinkMonster = new Monster("Pink Monster",8,1,"A small monster");
+Monster dragon = new Monster("Dragon",18,1,"A scary dragon");
+Room swordroom = new Room("Room of Swords!",null,"Sword"); //Creates room object
+Room entrancer = new Room("Entranceroom", null, null);
+Room keyroom = new Room("Keyroom",null,"Key");
+Room dragonroom = new Room("Dragonroom",dragon,"Treasure");
+Room monsterroom = new Room ("Monsterroom",pinkMonster,null);
+Room hallwayr = new Room ("Hallway",null,null);
+Room finishr = new Room ("Exit",null,null);
+    
+    public static void startGame () {
+    
+        //Create a Scanner object to obtain input from the command window
+        Scanner scan = new Scanner(System.in);
+    
+        //Welcome message
+        System.out.printf("\nWelcome to your treasure hunt! Beware of the oh"
+                + " so very scary dragon!\nYou are standing outside of a cave. "
+                + "There is a smell of sulfur coming from the opening.\nThe cave "
+                + "opening is to your east. Write \"e\" and press [Enter] to "
+                + "enter the cave\n\n");
+        
+        String val = scan.next();
+        Dungeon m = new Dungeon();
+
+            if (val.equalsIgnoreCase("e")) { //Message for entrance room
+                System.out.println("\tYou're in the entrance room, you hear a "
+                        + "loud boom, the door behind you is\n\tshut and there"
+                        + " is no door handle.\n\tYou have to find another "
+                        + "exit.");
+                System.out.println("\tYou can go north or south.\n\n"
+                        + "\tPress [n] to go north.\n"
+                        + "\tPress [s] to go south.");
+                if (val.equalsIgnoreCase("e")) {;
+                m.play(); //Start Game
+                }
+            }
+            else {System.out.printf("Invalid choice%n%n"); //
+                DungeonMaster.menu();
+            }
+    }
+
+    public void play() { //Keeps game running
+        while(isInGame == true){
+            move();
+
+
+        }
+    } 
+    //Declaring rooms for navigation
+    int swordRoom; 
+    int entrance;
+    int keyRoom;
+    int monsterRoom;
+    int hallway;
+    int potionRoom;
+    int finish;
+    int noUse;
+    int dragonRoom;
+    
+    //Array for navigating
+    int[][] map = new int[][]{
+    {0,3,6},
+    {1,4,7},
+    {2,5,8},
+    };
+
+     //Starting position
+     int x= 1;
+     int y = 0;
+     int currentRoom = map[x][y];
+    
+     
+    public void move(){
+
+        Scanner scan = new Scanner(System.in);
+        String dir;
+        
+        dir = scan.nextLine();  //Navigator with limits working as doors for
+        switch (dir){           //different rooms. Also stops player from getting
+        case "s":               //outside of the array/map.
+            if (currentRoom == map[1][0] || currentRoom == map [0][0]
+            || currentRoom == map[0][1] || currentRoom == map[1][1]){ x = x+1;}
+            else {System.out.println("\tThats a wall stupid.\n");}
+            currentRoom = map[x][y];
+            map();
+            break;
+        case "n":
+            if (currentRoom == map[2][0] || currentRoom == map [1][0]
+            || currentRoom == map[2][1] || currentRoom == map[1][1]){ x = x-1;}
+            else {System.out.println("\tThats a wall stupid.\n");}
+            currentRoom = map[x][y];
+            map();
+            break;
+        case "w":
+            if (currentRoom == map[0][1] || currentRoom == map [2][1]
+            || currentRoom == map[0][2] || currentRoom == map[2][2]){ y = y-1;}
+            else {System.out.println("\tThats a wall stupid.\n");}
+            currentRoom = map[x][y];
+            map();
+            break;
+        case "e": //Adds limits to potionRoom for unlocked and locked east door
+            if (currentRoom == map[2][1] && player1.showInv2().equals("Empty"))
+            {System.out.println("\tYou need the key\n");}
+            
+            if (currentRoom == map[2][1] && player1.showInv2().equals("Key"))
+            {y = y+1;System.out.printf("\tYou unlock the door and proceed\n");}
+       
+            if (currentRoom == map[0][0] || currentRoom == map [2][0]
+            || currentRoom == map[0][1]) {y = y+1;}
+            
+          //To stop message from showing because of east door limit in potionRoom
+            if (currentRoom == map[2][2] || currentRoom == map [1][0]
+            || currentRoom == map[1][1]) { 
+                System.out.println("\tThats a wall stupid.\n");}
+            currentRoom = map[x][y];
+            map();
+            break;
+        }
+    }
+
+    public void map() {
+        Scanner scan = new Scanner(System.in);
+        
+        //Declare room position in array
+        swordRoom = 0;
+        entrance = 1;
+        keyRoom = 2;
+        monsterRoom = 3;
+        hallway = 4;
+        potionRoom = 5;
+        finish = 6;
+        //noUse = 7;
+        dragonRoom = 8;
+        
+        //Room Content
+        if(currentRoom == swordRoom) {
+            if (player1.showInv0().equals("Empty")) {
+                System.out.println("\tYou enter a dark room and stumble upon an "
+                        + "old skeleton. In the darkness you\n"
+                        + "\tsee a faint shimmer. It's a sword.\n"
+                        + "\tThere are doors to the east and south.");
+                System.out.println("\n\tPress [1] to pick up the sword.");
+                System.out.println("\tPress [e] to use the east door\n"
+                        + "\tPress [s] to use the south door");
+            
+                String val2 = scan.nextLine();
+                if (val2.equals("1")) {
+                    player1.pickupSword();
+                    System.out.println("\tYou now do " + player1.getDamage() + 
+                            " damage.");
+                } 
+            }  else {
+                System.out.println("\tYou enter the room where you found the "
+                        + "sword.\n\tIt's empty. There are doors to the east and"
+                        + " south.");
+                System.out.println("\tPress [e] to use the east door\n"
+                        + "\tPress [s] to use the south door");
+                }
+        }
+        
+        //Room Content
+        if(currentRoom == entrance) {
+            System.out.println("\tYou're back the entrance, but the door is still"
+                    + " shut. Carry on ");
+            System.out.println("\n\tPress [n] to use the north door\n"
+                    + "\tPress [s] to use the south door");
+        }
+        
+        //Room Content
+        if(currentRoom == keyRoom) {
+            if (player1.showInv2().equals("Empty")) {
+                System.out.println("\tYou enter a room with blood red walls and "
+                        + "a stench of rotten eggs. You get\n\treminded about"
+                        + " breakfast.\n\tYou walk around and suddenly step on "
+                        + "something small.\n\tIt's a golden shiny key, but...\n"
+                        + "\tThe entrance door doens't have a key hole, better "
+                        + "save this one for later.");
+                System.out.println("\n\tPress [1] to pick up the key\n"
+                        + "\tPress [n] to use the north door\n"
+                        + "\tPress [e] to use the east door");
+                String val2 = scan.nextLine();
+                if (val2.equals("1")) {
+                    player1.pickupKey();
+                    System.out.println("\tYou have now got a " + 
+                            player1.showInv2());
+                } 
+            }  else {
+                System.out.println("\tYou enter the room where you found the "
+                        + "sword.\n\tIt's empty. There are doors to the east and"
+                        + " south.");
+                System.out.println("\tPress [e] to use the east door\n"
+                        + "\tPress [s] to use the south door");
+            }
+        }
+        
+        //Room Content
+        if(currentRoom == monsterRoom) {
+            if (pinkMonster.getHp() > 1) {
+                System.out.println("\tWoooaaaah! There's a large pink scary "
+                    + "monster standing in front of you.\n\n"
+                    + "\t       OOOOOO    \n" 
+                    + "\t      (@   @ )\n"
+                    + "\t     (...0....)\n"
+                    + "\t    /(.........)\\\n"
+                    + "\t   /(...........)\\\n"
+                    + "\t  (..)(..) (..)(..)\n"
+                    + "\t (..) (..) (..) (..)\n\n"
+                    + "\tYou have to battle the monster\n\n");
+                
+                //Keeps battle going until either loose
+                while (pinkMonster.getHp() > 0 && player1.getHp() > 0) {
+
+                    //Battle function for dealing damage
+                    player1.setHp(player1.getHp() - pinkMonster.getDamage());    
+                    pinkMonster.setHp(pinkMonster.getHp() - player1.getDamage());
+
+                    System.out.printf("The " + pinkMonster.getName() + " strikes "
+                            + "you for " + pinkMonster.getDamage() + 
+                            " damage...%nyou now have " + player1.getHp() + 
+                            "HP left...%n%n");
+
+                    System.out.printf("You strike the " + pinkMonster.getName() +
+                    " for " + player1.getDamage() + " damage...%nthe " + 
+                    pinkMonster.getName() + " now has " + pinkMonster.getHp() + 
+                    "HP left...%n%n");  
+                }
+                //Message if victory
+                if (pinkMonster.getHp() < 1) {
+                    System.out.print("\tWell done, you slayed the pink scary "
+                            + "monster.");
+                }//Message if loss
+                else {
+                    System.out.print("\tYou got killed by the pink scary "
+                            + "monster.\n\n"
+                            + "\t#################\n"
+                            + "\t### GAME OVER ###\n"
+                            + "\t#################\n");
+                    DungeonMaster.menu();
+                }
+            }
+                System.out.println("\n\tIn the room you see an opening and a "
+                        + "light to the east, it must be the exit.\n" 
+                        + "\tThere are also doors to the west and south");
+                System.out.println("\n\tPress [w] to use the western door\n"
+                    + "\tPress [e] to exit the cave (and quit the game)\n" 
+                    + "\tPress [s] to use the south door");   
+            
+            
+        }
+        
+        //Room Content
+        if(currentRoom == hallway) {
+            System.out.println("\tYou find yourself in a long hallway. You can"
+                    + " walk north or south");
+            System.out.println("\tPress [n] to go north.\n"
+                    + "\tPress [s] to go south");
+        }
+        
+        //Room Content
+        if(currentRoom == potionRoom) {
+            
+                System.out.println("\tYou enter a very large room with a massive"
+                        + " door made of gold in the east end.\n");
+                if (dragon.getHp() > 1) {
+                    System.out.println("\tThe room is lit with torches and you "
+                        + "see smoke\n\tcoming out from behind the "
+                        + "golden door\n");
+                }
+                if (player1.showInv1().equals("Empty")) {
+                    System.out.println("\tYou take a step back and stumble upon "
+                            + "a glass flask.\n\tIt's the blood of 4 male "
+                            + "virgins, it's a health potion!!!");
+                    System.out.println("\n\tPress [1] to pick up and drink the "
+                            + "potion");        
+                    System.out.println("\tPress [n] to use the north door\n"
+                        + "\tPress [w] to use the western door\n"
+                        + "\tPress [e] to use the east door");
+                    String val2 = scan.nextLine();
+                    if (val2.equals("1")) {
+                        player1.pickupPotion();
+                        player1.setHp(10);
+                        System.out.println("\tYour health is restored. "
+                                + "You have " + player1.getHp() + " HP.\n");
+                    }
+                }
+                if (player1.showInv1().equals("Potion")) {
+                System.out.println("\tPress [n] to use the north door\n"
+                        + "\tPress [w] to use the western door\n"
+                        + "\tPress [e] to use the east door");
+                }
+        }  
+        
+        //Room Content
+        if(currentRoom == finish) {
+            if (player1.showInv3().equals("Treasure")) {
+                System.out.println("\n\tYeah, you killed the dragon, slayed the"
+                        + " monster and found the treasure.\n\n"
+                        + "\t#######################\n"
+                        + "\t## You won the game! ##\n"
+                        + "\t#######################\n");
+                DungeonMaster.menu();
+            } else {
+            System.out.println("\n\tYou got out alive but with no treasure. "
+                        + "That sucks!\n");
+                DungeonMaster.menu();
+                }
+        }
+        
+        //Room Content
+        if(currentRoom == dragonRoom) {
+            
+            if (dragon.getHp() > 1) {
+                System.out.println("\tYou open the door and room is hot and "
+                        + "filled with smoke.\n\tWhen the smoke disperse you "
+                        + "stand eye to eye with a very,\n\toh so very scary "
+                        + "dragon.\n");
+                System.out.println(
+    "                                                  .~))>>\n"+
+    "                                                 .~)>>\n"+
+    "                                               .~))))>>>\n"+
+    "                                             .~))>>             ___\n"+
+    "                                           .~))>>)))>>      .-~))>>\n"+
+    "                                         .~)))))>>       .-~))>>)>\n"+
+    "                                       .~)))>>))))>>  .-~)>>)>\n"+
+    "                   )                 .~))>>))))>>  .-~)))))>>)>\n"+
+    "                ( )@@*)             //)>))))))  .-~))))>>)>\n"+
+    "              ).@(@@               //))>>))) .-~))>>)))))>>)>\n"+
+    "            (( @.@).              //))))) .-~)>>)))))>>)>\n"+
+    "          ))  )@@*.@@ )          //)>))) //))))))>>))))>>)>\n"+
+    "       ((  ((@@@.@@             |/))))) //)))))>>)))>>)>\n"+
+    "      )) @@*. )@@ )   (\\_(\\-\\b  |))>)) //)))>>)))))))>>)>\n"+
+    "    (( @@@(.@(@ .    _/`-`  ~|b |>))) //)>>)))))))>>)>\n"+
+    "     )* @@@ )@*     (@)  (@) /\\b|))) //))))))>>))))>>\n"+
+    "   (( @. )@( @ .   _/  /    /  \\b)) //))>>)))))>>>_._\n"+
+    "    )@@ (@@*)@@.  (6///6)- / ^  \\b)//))))))>>)))>>   ~~-.\n"+
+    " ( @jgs@@. @@@.*@_ VvvvvV//  ^  \\b/)>>))))>>      _.     `bb\n"+
+    " ((@@ @@@*.(@@ . - | o |' \\ (  ^   \\b)))>>        .'       b`,\n"+
+    "   ((@@).*@@ )@ )   \\^^^/  ((   ^  ~)_        \\  /           b `,\n"+
+    "     (@@. (@@ ).     `-'   (((   ^    `\\ \\ \\ \\ \\|             b  `.\n"+
+    "       (*.@*              / ((((        \\| | |  \\       .       b `.\n"+
+    "                         / / (((((  \\    \\ /  _.-~\\     Y,      b  ;\n"+
+    "                        / / / (((((( \\    \\.-~   _.`\" _.-~`,    b  ;\n"+
+    "                       /   /   `(((((()    )    (((((~      `,  b  ;\n"+
+    "                     _/  _/      `\"\"\"/   /'                  ; b   ;\n"+
+    "                 _.-~_.-~           /  /'                _.'~bb _.'\n"+
+    "               ((((~~              / /'              _.'~bb.--~\n"+
+    "                                  ((((          __.-~bb.-~\n"+
+    "                                              .'  b .~~\n"+
+    "                                              :bb ,' \n"+
+    "                                              ~~~~\n");
+                System.out.println("\tYou also catch a "
+                        + "glimpse of a large treasure chest guarded by the oh\n"
+                        + "\tso very scary dragon\n"
+                        + "\tYou have no choice but to battle the dragon.\n");            
+                
+                //Keeps battle going until either loose
+                while (dragon.getHp() > 0 && player1.getHp() > 0) {
+
+                    //Battle function for dealing damage
+                    player1.setHp(player1.getHp() - dragon.getDamage());    
+                    dragon.setHp(dragon.getHp() - player1.getDamage());
+
+                    System.out.printf("The " + dragon.getName() + " strikes you "
+                    + "for " + dragon.getDamage() + " damage...%nyou now have "
+                    + player1.getHp() + "HP left...%n%n");
+
+                    System.out.printf("You strike the " + dragon.getName()+
+                    " for " + player1.getDamage() + " damage...%nthe " + 
+                    dragon.getName() + " now has " + dragon.getHp() + 
+                    "HP left...%n%n");
+                }
+                //If dragon is slain you win
+                if (dragon.getHp() < 1) {
+                    System.out.println("\tCongratulations to a great victory!\n"
+                            + "\tYou killed the oh so very scary dragon.\n");
+                    if (player1.showInv3().equals("Empty")) {
+                        player1.pickupTreasure();
+                        dragonroom.pickupItem(); System.out.println("\tYou walk"
+                            + " over to the treasure chest and pick it up.\n"
+                            + "                  _.--.\\n\"+\n" +
+                "            \"              _.-'_:-'||\\n\"+\n" +
+                "            \"          _.-'_.-::::'||\\n\"+\n" +
+                "            \"     _.-:'_.-::::::'  ||\\n\"+\n" +
+                "            \"   .'`-.-:::::::'     ||\\n\"+\n" +
+                "            \"  /.'`;|:::::::'      ||_\\n\"+\n" +
+                "            \" ||   ||::::::'      _.;._'-._\\n\"+\n" +
+                "            \" ||   ||:::::'   _.-!oo @.!-._'-.\\n\"+\n" +
+                "            \" \\'.  ||:::::.-!() oo @!()@.-'_.||\\n\"+\n" +
+                "            \"   '.'-;|:.-'.&$@.& ()$%-'o.'\\\\U||\\n\"+\n" +
+                "            \"     `>'-.!@%()@'@_%-'_.-o _.|'||\\n\"+\n" +
+                "            \"      ||-._'-.@.-'_.-' _.-o  |'||\\n\"+\n" +
+                "            \"      ||=[ '-._.-\\\\U/.-'    o |'||\\n\"+\n" +
+                "            \"      || '-.]=|| |'|      o  |'||\\n\"+\n" +
+                "            \"      ||      || |'|        _| ';\\n\"+\n" +
+                "            \"      ||      || |'|    _.-'_.-'\\n\"+\n" +
+                "            \"      |'-._   || |'|_.-'_.-'\\n\"+\n" +
+                "            \"      '-._'-.|| |' `_.-'\\n\"+\n" +
+                "            \"           '-.||_/.-'\\n\n" );
+                        System.out.println("\tPress [w] to exit this room.");
+                    }
+                }
+                else { //If you loose all hp
+                    System.out.println("\tYou got killed by\n "
+                            + "\tthe oh so very scary dragon.\n\n"
+                            + "\t#################\n"
+                            + "\t### GAME OVER ###\n"
+                            + "\t#################\n");
+                    DungeonMaster.menu();
+                }
+            }
+        }
+    }
+}  
